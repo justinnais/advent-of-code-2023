@@ -5,6 +5,19 @@ enum Direction {
     Reverse,
 }
 
+struct Window {
+    start: usize,
+    end: usize,
+}
+impl Window {
+    fn new(index: usize) -> Self {
+        Self {
+            start: index,
+            end: index,
+        }
+    }
+}
+
 fn get_word_value(strings: [&str; 9], word: &str) -> Option<u32> {
     strings
         .iter()
@@ -17,55 +30,46 @@ fn sliding_window(line: &str, direction: Direction) -> u32 {
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];
     let max_len = strs.iter().map(|s| s.len()).max().unwrap();
-    let mut num = 0;
-    let mut start = 0;
-    let mut end = 0;
-    match direction {
-        Direction::Forward => {
-            loop {
-                let word = &line[start..=end];
-                let last_char = word.chars().last().unwrap();
-                if let Some(i) = get_word_value(strs, word) {
-                    num = i;
-                } else if last_char.is_ascii_digit() {
-                    num = last_char.to_digit(10).unwrap();
-                }
+    let mut value = 0;
+    let Window { mut start, mut end } = match direction {
+        Direction::Forward => Window::new(0),
+        Direction::Reverse => Window::new(line.len() - 1),
+    };
 
+    loop {
+        let word = &line[start..=end];
+        let char = match direction {
+            Direction::Forward => word.chars().last().unwrap(),
+            Direction::Reverse => word.chars().next().unwrap(),
+        };
+        if let Some(i) = get_word_value(strs, word) {
+            value = i;
+        } else if char.is_ascii_digit() {
+            value = char.to_digit(10).unwrap();
+        }
+
+        match direction {
+            Direction::Forward => {
                 if (end - start) > max_len {
                     start += 1;
                 }
-                end += 1;
-
-                if end == line.len() || num != 0 {
+                if end == line.len() || value != 0 {
                     break;
                 }
+                end += 1;
             }
-            num
-        }
-        Direction::Reverse => {
-            start = line.len() - 1;
-            end = line.len() - 1;
-            loop {
-                let word = &line[start..=end];
-                let first_char = word.chars().next().unwrap();
-                if let Some(i) = get_word_value(strs, word) {
-                    num = i;
-                } else if first_char.is_ascii_digit() {
-                    num = first_char.to_digit(10).unwrap();
-                }
-
+            Direction::Reverse => {
                 if (end - start) > max_len {
                     end -= 1;
                 }
-
-                if start == 0 || num != 0 {
+                if start == 0 || value != 0 {
                     break;
                 }
                 start -= 1;
             }
-            num
         }
     }
+    value
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -116,31 +120,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file_part("examples", DAY, 2));
-        assert_eq!(
-            result,
-            Some(
-                281 + 59
-                    + 21
-                    + 83
-                    + 11
-                    + 11
-                    + 22
-                    + 22
-                    + 33
-                    + 33
-                    + 44
-                    + 44
-                    + 55
-                    + 55
-                    + 66
-                    + 66
-                    + 77
-                    + 77
-                    + 88
-                    + 88
-                    + 99
-                    + 99
-            )
-        );
+        assert_eq!(result, Some(1434));
     }
 }
