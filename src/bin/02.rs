@@ -2,8 +2,7 @@ use std::collections::HashMap;
 
 advent_of_code::solution!(2);
 
-#[derive(Debug)]
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 struct Round {
     red: u32,
     green: u32,
@@ -13,7 +12,7 @@ impl Round {
     fn from(str: &str) -> Self {
         let mut map: HashMap<&str, u32> = HashMap::new();
         for part in str.split(", ") {
-            let mut iter = part.split(" ");
+            let mut iter = part.split(' ');
             let count = iter.next().unwrap().parse::<u32>().unwrap();
             let color = iter.next().unwrap();
             map.insert(color, count);
@@ -33,6 +32,10 @@ impl Round {
         }
     }
 
+    fn greater_than(&self, other: Self) -> bool {
+        self.red > other.red || self.green > other.green || self.blue > other.blue
+    }
+
     fn pow(&self) -> u32 {
         self.red * self.green * self.blue
     }
@@ -49,9 +52,7 @@ fn parse_line(line: &str) -> Vec<Round> {
         .nth(1)
         .unwrap()
         .split("; ")
-        .map(|round| {
-            return Round::from(round);
-        })
+        .map(Round::from)
         .collect()
 }
 
@@ -63,30 +64,32 @@ pub fn part_one(input: &str) -> Option<u32> {
             let rounds = parse_line(line);
             let mut valid = true;
             for round in rounds {
-                if round.red > MAX_CUBES.red
-                    || round.green > MAX_CUBES.green
-                    || round.blue > MAX_CUBES.blue
-                {
+                if round.greater_than(MAX_CUBES) {
                     valid = false;
                     break;
                 }
             }
-            if valid {
-                return Some(i as u32 + 1)
-            } else {
-                return Some(0);
+            match valid {
+                true => Some(i as u32 + 1),
+                false => Some(0),
             }
-        }).sum()
+        })
+        .sum()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    input.lines().enumerate().map(|(i, line)| {
-        let rounds = parse_line(line);
-        let min_set: Round = rounds.iter().fold(rounds[0], |acc, round| {
-            acc.max(round)
-        });
-        return Some(min_set.pow());
-    }).sum()
+    input
+        .lines()
+        .map(parse_line)
+        .map(|rounds| {
+            return Some(
+                rounds
+                    .iter()
+                    .fold(rounds[0], |acc, round| acc.max(round))
+                    .pow(),
+            );
+        })
+        .sum()
 }
 
 #[cfg(test)]
