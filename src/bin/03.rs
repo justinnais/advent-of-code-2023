@@ -71,8 +71,6 @@ fn find_number(map: &Vec<Vec<char>>, Cell { position: Position(x, y), ..}: Cell)
 }
 
 fn search_for_parts(map: &Vec<Vec<char>>, symbols: &Vec<char>, process: &dyn Fn(&Vec<Vec<char>>, Vec<Cell>) -> (u32, Vec<Position>)) -> u32 {
-    println!("searching for symbols: {:?}", symbols);
-
     let mut parts: Vec<u32> = Vec::new();
     let mut visited_cells: Vec<Position> = Vec::new();
 
@@ -91,7 +89,6 @@ fn search_for_parts(map: &Vec<Vec<char>>, symbols: &Vec<char>, process: &dyn Fn(
         }
     }
 
-    println!("parts: {:?}", parts);
     parts.iter().sum::<u32>().into()
 }
 
