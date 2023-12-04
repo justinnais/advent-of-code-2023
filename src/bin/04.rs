@@ -58,7 +58,7 @@ fn run(input: &str, start: usize, end: usize, cache: &mut Vec<u32>) -> u32 {
         }
 
         if matches == 0 {
-            continue;
+            break;
         }
 
         let value = run(input, i + 1, i + matches, cache);
