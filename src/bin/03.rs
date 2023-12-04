@@ -44,7 +44,13 @@ fn find_neighbours(map: &Vec<Vec<char>>, x: usize, y: usize) -> Vec<Cell> {
 }
 
 // linear search for digits that make up number
-fn find_number(map: &Vec<Vec<char>>, Cell { position: Position(x, y), ..}: Cell) -> (u32, Vec<Position>) {
+fn find_number(
+    map: &Vec<Vec<char>>,
+    Cell {
+        position: Position(x, y),
+        ..
+    }: Cell,
+) -> (u32, Vec<Position>) {
     let mut right = y;
     let mut left = y;
 
@@ -70,7 +76,11 @@ fn find_number(map: &Vec<Vec<char>>, Cell { position: Position(x, y), ..}: Cell)
     (number, visited_cells)
 }
 
-fn search_for_parts(map: &Vec<Vec<char>>, symbols: &Vec<char>, process: &dyn Fn(&Vec<Vec<char>>, Vec<Cell>) -> (u32, Vec<Position>)) -> u32 {
+fn search_for_parts(
+    map: &Vec<Vec<char>>,
+    symbols: &Vec<char>,
+    process: &dyn Fn(&Vec<Vec<char>>, Vec<Cell>) -> (u32, Vec<Position>),
+) -> u32 {
     let mut parts: Vec<u32> = Vec::new();
     let mut visited_cells: Vec<Position> = Vec::new();
 

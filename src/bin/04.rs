@@ -92,11 +92,9 @@ fn run(input: &str, start: usize, end: usize, cache: &mut Vec<u32>) -> u32 {
         cache[i] = value;
         count += value;
         println!("Cache: {:?}", cache);
-
     }
     count
 }
-
 
 fn parse_line(line: &str) -> (Vec<u32>, Vec<u32>) {
     let (left, right) = line
