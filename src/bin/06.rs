@@ -7,14 +7,25 @@ struct Race {
 }
 impl Race {
     fn margin_of_error(&self) -> u64 {
-        let mut count: u64 = 0;
-        for hold_duration in 0..=self.time {
-            let distance = hold_duration * (self.time - hold_duration);
-            if distance > self.distance {
-                count += 1;
+        let mut left = 0;
+        let mut right = self.time;
+
+        fn is_winner(race: &Race, duration: u64) -> bool {
+            let distance = duration * (race.time - duration);
+            if distance > race.distance {
+                return true;
             }
+            false
         }
-        count
+
+        while left <= right && !is_winner(self, left) {
+            left += 1;
+        }
+        while left <= right && !is_winner(self, right) {
+            right -= 1;
+        }
+
+        right - left + 1
     }
 }
 
@@ -56,19 +67,12 @@ pub fn part_two(input: &str) -> Option<u64> {
             .unwrap()
     });
 
-    let mut count: u64 = 0;
-
     let race = Race {
         time: iter.next().unwrap(),
         distance: iter.next().unwrap(),
     };
 
-    match count {
-        0 => count += race.margin_of_error(),
-        _ => count *= race.margin_of_error(),
-    }
-
-    Some(count)
+    Some(race.margin_of_error())
 }
 
 #[cfg(test)]
